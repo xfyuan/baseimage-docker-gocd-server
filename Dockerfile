@@ -1,5 +1,3 @@
-# Use phusion/baseimage as base image. To make your builds reproducible,
-# make sure you lock down to a specific version, not to `latest`!
 FROM gocd/gocd-server:latest
 
 # Set correct environment variables.
