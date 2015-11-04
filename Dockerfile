@@ -1,7 +1,6 @@
 FROM gocd/gocd-server:latest
 
 # Set correct environment variables.
-ENV HOME /root
 ENV RUBY_VERSION 2.2.3
 
 # ===================
@@ -22,23 +21,14 @@ RUN apt-get install -y nodejs
 # Install ruby
 # =============
 
-# Install rbenv
-RUN git clone https://github.com/sstephenson/rbenv.git /root/.rbenv
-RUN git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build
-ENV PATH /root/.rbenv/bin:/root/.rbenv/shims:$PATH
-
-# Update rbenv and ruby-build definitions
-RUN bash -c 'cd /root/.rbenv/ && git pull'
-RUN bash -c 'cd /root/.rbenv/plugins/ruby-build/ && git pull'
-
-# Install ruby and gems
-RUN rbenv install $RUBY_VERSION
-RUN rbenv global $RUBY_VERSION
-
-RUN echo 'gem: --no-rdoc --no-ri' >> ~/.gemrc
-
-RUN gem install bundler --no-ri --no-rdoc
-RUN rbenv rehash
+# install rvm
+RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3; \curl -sSL https://get.rvm.io | sudo bash -s stable
+RUN /bin/bash -l -c "source /etc/profile.d/rvm.sh"
+RUN /bin/bash -l -c "rvm install $RUBY_VERSION"
+RUN /bin/bash -l -c "echo 'gem: --no-ri --no-rdoc' > ~/.gemrc"
+RUN /bin/bash -l -c "gem install bundler --no-ri --no-rdoc"
+RUN /bin/bash -l -c "rvm use $RUBY_VERSION --default"
+RUN /bin/bash -l -c "ruby -v"
 
 # =======================
 # Clean up APT when done.
